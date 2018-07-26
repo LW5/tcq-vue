@@ -1,7 +1,15 @@
 export default {
   namespaced:true,
     state:{
+      count:0,
+      currentPage:1,
+      eachpage:10,
+      maxPage:0,
       tableData: [{
+      //   count:"",
+      //   currentPage:1,
+      //   eachpage:10,
+      //   maxPage:"",
         shopName: '',
         shopLicenceImg: '',
         shopUserImg: '',
@@ -15,7 +23,12 @@ export default {
     },
     mutations: {
       assign(state, data) {
-        state.tableData = data
+       state.count=data.count
+       state.currentPage=data.currentPage
+       state.eachpage=data.eachpage
+       state.maxPage=data.maxPage
+       state.tableData = data.rows
+      //  console.log(state)
       },
     },
     actions: {
@@ -33,7 +46,6 @@ export default {
         // console.log(data)
       },
       async getShop(context) {
-        // console.log(page)
         const data = await fetch("/shop/getshop", {
           method: "post",
           body: JSON.stringify(),
@@ -41,10 +53,7 @@ export default {
             "Content-Type": "application/json"
           }
         }).then(res => res.json())
-        // this.assign(data)
-        // console.log('in')
-        context.commit('assign',data)
-        // console.log(data)
+        context.commit('assign',data)  
       },
       async delshop(context,id) {
          await fetch("/shop/delshop", {
@@ -67,6 +76,18 @@ export default {
        }).then()
       
      },
+     async getShopByPage(context,data3) {
+      //  console.log(data3)
+      const data = await fetch("/shop/getShopByPage", {
+        method: "post",
+        body: JSON.stringify(data3),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }).then(res => res.json())
+      // console.log(data)
+      context.commit('assign',data)  
+    },
    
     }
   }

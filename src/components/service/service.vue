@@ -62,7 +62,7 @@
         prop="shopImg"
         label="头图"
   
-        width="180">
+        width="150">
 
     <template slot-scope="scope">
       <img :src="scope.row.shopImg" alt="" style="width: 50px;height: 50px">
@@ -228,11 +228,11 @@
     <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
-      :current-page="currentPage4"
+      :current-page="currentPage"
       :page-sizes="[10, 20, 30, 40]"
       :page-size="100"
       layout="total, sizes, prev, pager, next, jumper"
-      :total=this.tableData.length>
+      :total="count">
     </el-pagination>
   </div>
   
@@ -244,12 +244,25 @@
 import { mapState, mapActions } from "vuex";
 export default {
   methods: {
-  
+    
    handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
+       const data = {
+         eachpage:val,
+         currentPage:this.currentPage,
+       }
+        this.$store.dispatch("service/getShopByPage",data)
+        // console.log(`每页 ${val} 条`);
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
+        // console.log(this.$state)
+        // console.log(this.currentPage)
+       const data = {
+         eachpage:this.eachpage,
+         currentPage:val,
+       }
+        
+         this.$store.dispatch("service/getShopByPage",data)
+        // console.log(`当前页: ${val}`);
       },
 
 
@@ -277,7 +290,12 @@ export default {
       //  console.log(rows[index]._id)
       // rows.splice(index, 1);
       this.$store.dispatch("service/delshop", rows[index]._id);
-      this.$store.dispatch("service/getShop");
+      const data = {
+        currentPage:1,
+        eachpage:10,
+      }
+      this.$store.dispatch("service/getShopByPage",data)
+      // this.$store.dispatch("service/getShop");
     },
     editRow(index, rows) {
       this.modify = true;
@@ -334,11 +352,17 @@ export default {
         imgsId:this.imgsId
       };
       // console.log(data1)
-      this.$store.dispatch("service/addShop", data1);
-      this.$store.dispatch("service/getShop");
+      // this.$store.dispatch("service/getShop");
+      this.$store.dispatch("service/addShop",data1)
+      const data = {
+        currentPage:1,
+        eachpage:10,
+      }
+      this.$store.dispatch("service/getShopByPage",data)
       this.$refs.upload1.clearFiles();
       this.$refs.upload2.clearFiles();
       this.$refs.upload.clearFiles();
+
     },
     modifyshop(){
       // console.log(this.tableData)
@@ -369,23 +393,30 @@ export default {
       };
       // console.log(data2)
       this.$store.dispatch("service/changeshop", data2)
-      this.$store.dispatch("service/getShop");
+      const data = {
+        currentPage:1,
+        eachpage:10,
+      }
+      this.$store.dispatch("service/getShopByPage",data)
+      // this.$store.dispatch("service/getShop");
+    
     }
   },
   created() {
-    this.$store.dispatch("service/getShop");
+    const data3 = {
+      currentPage:this.currentPage,
+      eachpage:this.eachpage
+    }
+    this.$store.dispatch("service/getShopByPage",data3)
+    // this.$store.dispatch("service/getShop");
   },
   computed: {
-    ...mapState("service", ["tableData"]),
+    ...mapState("service", ["tableData","count","currentPage","eachpage"]),
     ...mapActions("service", ["addShop"])
   },
 
   data() {
     return {
-      currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
       imgsId:[],
       modify:false,
       dialogFormVisible: false,
